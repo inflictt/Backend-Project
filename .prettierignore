@@ -1,0 +1,31 @@
+# Dependency directories
+node_modules/
+jspm_packages/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build & Output
+dist/
+build/
+out/
+coverage/
+.next/
+.cache/
+
+# Static Assets
+public/
+assets/
+*.min.js
+*.min.css
+
+# Config & System
+.env
+.env.*
+.DS_Store
+.idea/
+.vscode/
+
+# Generated files
+*-lock.json
+*.log
