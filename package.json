@@ -1,0 +1,16 @@
+{
+  "name": "platform-inflict",
+  "version": "1.0.0",
+  "description": "backend project",
+  "keywords": [
+    "js",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Inflict",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
