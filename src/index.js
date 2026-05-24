@@ -5,7 +5,16 @@ dotenv.config()
 import mongoose from "mongoose";
 import { connectDB } from "./db/index.js";
 
-connectDB()
+connectDB().then(()=>{
+    app.listen(process.env.PORT || 8000,()=>{
+        console.log(`server running at port ${process.env.PORT}`);
+        
+    })
+})
+.catch((error)=>{
+    console.log("MongoDb conn failed",error);
+    
+})
 
 
 // -// Approach 1 conn to DB using index.js as a complete file 
