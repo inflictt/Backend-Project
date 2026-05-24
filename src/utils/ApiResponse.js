@@ -1,4 +1,4 @@
-class ApiResponse extends Error {
+class ApiResponse {
     constructor(
         statusCode, 
         data,
