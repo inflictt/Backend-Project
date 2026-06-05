@@ -24,12 +24,12 @@ export const registerUser =
         const avatarLocalPath = req.files?.avatar?.[0]?.path//given by multer and first prop picked 
         const coverImageLocalPath = req.files?.coverImage?.[0]?.path
         if (!avatarLocalPath){
-            throw new ApiError(400,"Avatar is required ")
+            throw new ApiError(400,"Avatar file is required (not received by server)")
         }
         const avatar =  await uploadOnCloudinary(avatarLocalPath)
         const coverImage =  await uploadOnCloudinary(coverImageLocalPath)
         if(!avatar){
-            throw new ApiError(400,"Avatar is required ")
+            throw new ApiError(400,"Avatar upload to Cloudinary failed")
         }
         
         // entry in db
