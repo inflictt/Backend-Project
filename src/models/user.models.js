@@ -1,7 +1,6 @@
-import mongoose,{Schema}  from "mongoose";
+import mongoose  from "mongoose";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { JsonWebTokenError } from "jsonwebtoken";
 const userSchema = new mongoose.Schema(
     {
     username:{
@@ -30,7 +29,7 @@ const userSchema = new mongoose.Schema(
         type:String,//cloudinary url 
         required:true,
     },
-    coverimage:{
+    coverImage:{
         type:String,
     },
     watchHistory:[{
@@ -38,9 +37,9 @@ const userSchema = new mongoose.Schema(
         ref:"Video"
     }],
     password:{
-        type:String,
-        password:[true,"Password is reqired!"]
-    },
+    type:String,
+    required:[true,"Password is required!"]
+},
     refreshToken:{
         type:String,
     },
@@ -57,8 +56,8 @@ userSchema.methods.isPasswordCorrect =async function name(password) {
 }
 
 userSchema.methods.generateAccessToken=function(){
-    jwt.sign({
-        _id:this.id,
+    return jwt.sign({
+        _id:this._id,
         email:this.email,
         username:this.username,
         fullname:this.fullname,
@@ -72,8 +71,8 @@ userSchema.methods.generateAccessToken=function(){
 
 
 userSchema.methods.generateRefreshToken=function(){
-jwt.sign({
-        _id:this.id,
+return jwt.sign({
+        _id:this._id,
     },
     process.env.REFRESH_TOKEN_SECRET,
     {
@@ -82,4 +81,6 @@ jwt.sign({
 )
 }
 
-export const User = mongoose.model("User",userSchema)
+const User = mongoose.model("User", userSchema);
+
+export default User;
