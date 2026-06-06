@@ -45,16 +45,17 @@ const userSchema = new mongoose.Schema(
     },
 },{timestamps:true})
 
-userSchema.pre("save",async function name(next) {
-    if (!this.isModified("password")) return next()
+// hash password before saving (only when it's new/changed)
+userSchema.pre("save",async function name() {
+    if (!this.isModified("password")) return
     this.password =await bcrypt.hash(this.password,10)
-
 })
-
+// password check return true false
 userSchema.methods.isPasswordCorrect =async function name(password) {
     return await bcrypt.compare(password,this.password)
 }
 
+// generate short-lived JWT with user info (sent to client, not stored in DB)
 userSchema.methods.generateAccessToken=function(){
     return jwt.sign({
         _id:this._id,
@@ -69,7 +70,7 @@ userSchema.methods.generateAccessToken=function(){
 )
 }
 
-
+// generate long-lived JWT with only _id (saved to DB by controller for re-login)
 userSchema.methods.generateRefreshToken=function(){
 return jwt.sign({
         _id:this._id,
