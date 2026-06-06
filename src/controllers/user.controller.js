@@ -125,7 +125,7 @@ export const loginUser = asyncHandler(async(req,res)=>{
 
 export const logoutUser = asyncHandler(async(req,res)=>{
     await User.findById(req.user._id),{
-        $set:{refreshToken:undefined}
+        $unset:{refreshToken:1}
     },
     {
         new:true
@@ -137,7 +137,7 @@ export const logoutUser = asyncHandler(async(req,res)=>{
     return res.status(200)
     .clearCookie("accessToken",options)
     .clearCookie("refreshToken",options)
-    .json(new api(201,"user logged out successfully"))
+    .json(new ApiResponse(201,"user logged out successfully"))
 })
 
 export const refreshAccessToken= asyncHandler(async(req,res)=>{
@@ -148,12 +148,12 @@ export const refreshAccessToken= asyncHandler(async(req,res)=>{
         throw new ApiError(401,"no incomingRefreshToken attached")
     }
     // jwt token verification 
-    const decodedToken = jwt.verify(incomingRefreshToken,process.env.ACCESS_TOKEN_SECRET)
+    const decodedToken = jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
     const user = await User.findById(decodedToken._id)
-    if (!user){
-        throw new ApiError(401,"invalid refresh token")
+    if (!user){        
+        throw new ApiError(401,"invalid refresh token 1")
     }
-    if (incomingRefreshToken !==decodedToken){
+    if (incomingRefreshToken !==user.refreshToken){
         throw new ApiError(401,"refresh token either expired or used")
     }
     // make new token as everthing passed if we reached here 
@@ -161,19 +161,20 @@ export const refreshAccessToken= asyncHandler(async(req,res)=>{
         httpOnly:true,
         secure:true
     }
-    const {accessToken,newRefreshToken}= await generateAccessTokenAndRefreshToken(user._id)
+    const {accessToken,refreshToken}= await generateAccessTokenAndRefreshToken(user._id)
     return res.status(200)
     .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",newRefreshToken,options)
+    .cookie("refreshToken",refreshToken,options)
     .json(
         new ApiResponse(200,{
             accessToken,
-            refreshToken:newRefreshToken,
+            refreshToken,
             options
         },"access token refreshed successfully")
     )}
     catch(error){
-        throw new ApiError(401,"invalid refresh token")
+         console.log(error); ///for debugging did this and 1 , 2 for same only
+        throw new ApiError(401,"invalid refresh token 2")
     }
 })
 
@@ -196,6 +197,8 @@ export const changeCurrentPassword = asyncHandler(async(req,res)=>{
 
 
 export const getCurrentUser = asyncHandler(async(req,res)=>{
+    // console.log(req.user)
+
     return res.status(200)
     .json(new ApiResponse(200,req.user,"Fetched the current user successfully"))
 })
@@ -213,8 +216,9 @@ export const updateAccountDetails  = asyncHandler(async(req,res)=>{
         }
     },{new:true}
 ).select("-password")
+
 return res.status(200)
-.json(new ApiResponse(200,{},"account details updated successfully"))
+.json(new ApiResponse(200,req.user,"account details updated successfully"))
 })
 
 export const updateUserAvatar = asyncHandler(async(req,res)=>{
